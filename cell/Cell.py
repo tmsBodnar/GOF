@@ -1,6 +1,5 @@
 class Cell:
-
-    dead= True
+    dead = True
 
     x = 0
     y = 0
