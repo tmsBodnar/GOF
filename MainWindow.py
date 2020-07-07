@@ -45,7 +45,6 @@ def exit_callback():
 # load pattern to pattern_canvas
 def load_pattern(file):
     extension = Path(file.name).suffix
-    print(extension)
     if extension.upper() != ".RLE":
         messagebox.showinfo("Wrong file type", "Please, load .rle files")
     else:
