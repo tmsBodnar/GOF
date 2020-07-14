@@ -5,6 +5,7 @@ from tkinter import filedialog, messagebox
 from simulator import Simulator
 from rleloader import RleLoader
 from pathlib import Path
+from baby import Baby
 
 pattern_wrapper_options = {
     'width': '200',
@@ -42,30 +43,62 @@ def exit_callback():
     sys.exit()
 
 
+# create pattern canvas to show pattern visually
+def create_pattern_canvas(baby, row):
+    wn_x = 0
+    wn_y = 0
+    es_x = 0
+    ex_y = 0
+    pattern_canvas = Canvas(pattern_wrapper, pattern_canvas_options, scrollregion=(0, 0, 750, 750))
+    pattern_canvas.grid(column=0, row=row, sticky=N + W)
+    x_mod = int(pattern_canvas_options.get('width'))
+    y_mod = int(pattern_canvas_options.get('height'))
+    dim_mod = x_mod / (baby.dimension[0] + 2) if baby.dimension[0] > baby.dimension[1] else y_mod / (baby.dimension[1] + 2)
+    for cell in baby.cells:
+        cell.dimension = {'x_dim': dim_mod,
+                          'y_dim': dim_mod}
+    for cell in baby.cells:
+        x = cell.position['x']
+        y = cell.position['y']
+        wn_x = int(cell.dimension['x_dim'] + cell.dimension['x_dim'] * x)
+        wn_y = int(cell.dimension['y_dim'] + cell.dimension['y_dim'] * y)
+        es_x = int(cell.dimension['x_dim'] * 2 + cell.dimension['x_dim'] * x)
+        es_y = int(cell.dimension['y_dim'] * 2 + cell.dimension['y_dim'] * y)
+        print(wn_x, wn_y, es_x, es_y)
+        pattern_canvas.create_rectangle(wn_x, wn_y, es_x, es_y, fill='#000000')
+
+
 # load pattern to pattern_canvas
-def load_pattern(file):
+def load_pattern(file, row):
     extension = Path(file.name).suffix
     if extension.upper() != ".RLE":
         messagebox.showinfo("Wrong file type", "Please, load .rle files")
     else:
-        RleLoader.load_pattern(file)
+        baby: Baby
+        baby = RleLoader.load_pattern(file)
+        for widget in pattern_wrapper.winfo_children():
+            widget.destroy()
+        create_pattern_canvas(baby, row)
 
 
 # opens file dialog, and starts simulation with chosen file
 def open_file_dialog():
     file = filedialog.askopenfile(mode='r')
     if file is not None:
-        load_pattern(file)
+        for widget in pattern_wrapper.winfo_children():
+            widget.destroy()
+        load_pattern(file, 0)
 
 
-#open folder to load all files from
+# open folder to load all files from
 def open_folder_dialog():
     path = filedialog.askdirectory()
     print(path)
     base_path = Path(path)
     files_in_basepath = base_path.iterdir()
-    for item in files_in_basepath:
-        load_pattern(item)
+    pattern_wrapper.delete(ALL)
+    for i, item in files_in_basepath:
+        load_pattern(item, i)
 
 
 def start_simulation_callback():
@@ -85,8 +118,8 @@ root.config(menu=menu_bar)
 
 pattern_wrapper = Canvas(root, pattern_wrapper_options)
 pattern_wrapper.grid(column=0, row=0, rowspan=2, sticky=W + S + N + E)
-pattern_canvas = Canvas(pattern_wrapper, pattern_canvas_options, scrollregion=(0, 0, 750, 750))
-pattern_canvas.grid(column=0, row=0, sticky=N + W)
+# pattern_canvas = Canvas(pattern_wrapper, pattern_canvas_options, scrollregion=(0, 0, 750, 750))
+# pattern_canvas.grid(column=0, row=0, sticky=N + W)
 vbar = Scrollbar(root, orient=VERTICAL)
 vbar.grid(column=1, row=0, rowspan=2, sticky=W + S + N)
 vbar.config(command=pattern_wrapper.yview)
