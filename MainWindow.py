@@ -53,18 +53,19 @@ def create_pattern_canvas(baby, row):
     pattern_canvas.grid(column=0, row=row, sticky=N + W)
     x_mod = int(pattern_canvas_options.get('width'))
     y_mod = int(pattern_canvas_options.get('height'))
-    dim_mod = x_mod / (baby.dimension[0] + 2) if baby.dimension[0] > baby.dimension[1] else y_mod / (baby.dimension[1] + 2)
+    x_dim_is_bigger = True if baby.dimension[0] > baby.dimension[1] else False
+    dim_mod = x_mod / (baby.dimension[0] + 2) if x_dim_is_bigger else y_mod / (baby.dimension[1] + 2)
+    center_mod = (baby.dimension[0] - baby.dimension[1]) / 2 if x_dim_is_bigger else (baby.dimension[1] - baby.dimension[0]) / 2
     for cell in baby.cells:
         cell.dimension = {'x_dim': dim_mod,
                           'y_dim': dim_mod}
     for cell in baby.cells:
-        x = cell.position['x']
-        y = cell.position['y']
+        x = cell.position['x'] + center_mod if x_dim_is_bigger else cell.position['x']
+        y = cell.position['y'] if x_dim_is_bigger else cell.position['y'] + center_mod
         wn_x = int(cell.dimension['x_dim'] + cell.dimension['x_dim'] * x)
         wn_y = int(cell.dimension['y_dim'] + cell.dimension['y_dim'] * y)
         es_x = int(cell.dimension['x_dim'] * 2 + cell.dimension['x_dim'] * x)
         es_y = int(cell.dimension['y_dim'] * 2 + cell.dimension['y_dim'] * y)
-        print(wn_x, wn_y, es_x, es_y)
         pattern_canvas.create_rectangle(wn_x, wn_y, es_x, es_y, fill='#000000')
 
 
@@ -74,7 +75,6 @@ def load_pattern(file, row):
     if extension.upper() != ".RLE":
         messagebox.showinfo("Wrong file type", "Please, load .rle files")
     else:
-        baby: Baby
         baby = RleLoader.load_pattern(file)
         for widget in pattern_wrapper.winfo_children():
             widget.destroy()

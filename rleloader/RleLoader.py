@@ -3,14 +3,15 @@ from cell import Cell
 import re
 import sys
 
+
 dim_regex = re.compile('(x *=)')
 y_regex = re.compile('(y *=)')
+
 dimension = (10, 10)
 cells = set()
-baby = Baby.Baby(dimension, cells)
 
 
-def set_pattern_dimension(line):
+def set_pattern_dimension(line, baby):
     match = re.search(r"(x *= )\d*", line)
     if match:
         match_x = re.search(r"\d+", match.group())
@@ -24,53 +25,88 @@ def set_pattern_dimension(line):
             baby.dimension = (x, y)
 
 
-def rle_decode(data):
+def rle_decode(data, baby):
     data.lower()
-    count = 0
-    x = 0
-    for i in range(len(data)):
-        repeater = 1
-        if data[i] == '$':
-            count = 0;
-            x += 1
-        if data[i] == 'b':
-            if data[i - 1].isdigit():
-                count += int(data[i - 1]);
-            else:
-                count += 1;
-        if data[i] == 'o':
+    row_list = data.rsplit('$')
+    for row_index, row in enumerate(row_list, start=0):
 
-            if data[i - 1].isdigit():
-                repeater = int(data[i - 1])
-                for j in range(repeater):
+        repeater = '0'
+        count = 0;
+        for index, letter in enumerate(row, start=0):
+
+            if letter.isdigit():
+                repeater += letter
+                count += int(repeater) - 1
+            if letter == 'b':
+                repeater = '0'
+                count += 1
+            if letter == 'o':
+                if int(repeater) == 0:
                     cell = Cell.Cell()
-                    cell.position = {'x': x,
-                                 'y': j + count}
+                    cell.position = {'x': row_index,
+                                     'y': count}
                     baby.cells.add(cell)
-            else:
-                y = count
-                cell = Cell.Cell()
-                cell.position = {'x': x,
-                                 'y': y}
-                baby.cells.add(cell)
-            count += 1
+                else:
+                    for place in range(int(repeater)):
+                        cell = Cell.Cell()
+                        cell.position = {'x': row_index,
+                                        'y':  place }
+                        baby.cells.add(cell)
+                repeater = '0'
+                count += 1
+
+    return baby
+
+# def rle_decode(data, baby):
+#     data.lower()
+#     count = 0
+#     x = 0
+#     for i in range(len(data)):
+#         repeater = 1
+#         if data[i] == '$':
+#             count = 0;
+#             x += 1
+#         if data[i] == 'b':
+#             if data[i - 1].isdigit():
+#                 count += int(data[i - 1]);
+#             else:
+#                 count += 1;
+#         if data[i] == 'o':
+#
+#             if data[i - 1].isdigit():
+#                 repeater = int(data[i - 1])
+#                 for j in range(repeater):
+#                     cell = Cell.Cell()
+#                     cell.position = {'x': x,
+#                                      'y': j + count}
+#                     baby.cells.add(cell)
+#             else:
+#                 y = count
+#                 cell = Cell.Cell()
+#                 cell.position = {'x': x,
+#                                  'y': y}
+#                 baby.cells.add(cell)
+#             count += 1
+#     return baby
+
 #    for cell in baby.cells:
 #        for position in sorted(cell.position.items()):
 #           print(str(position[0]) + ' : ' + str(position[1]))
 
 
-def set_newborn_cells(line):
-    rle_decode(line)
+def set_newborn_cells(line, baby):
+    return rle_decode(line, baby)
 
 
 def load_pattern(file):
+    cells.clear()
+    baby = Baby.Baby(dimension, cells)
     pattern_line = ''
     dimension_index = sys.maxsize;
     for i, line in enumerate(file):
         if re.match(dim_regex, line):
-            set_pattern_dimension(line)
+            set_pattern_dimension(line, baby)
             dimension_index = i
         if i >= dimension_index + 1:
             pattern_line += str(line.rstrip())
-    set_newborn_cells(pattern_line)
-    return baby
+    return set_newborn_cells(pattern_line, baby)
