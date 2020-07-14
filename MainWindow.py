@@ -48,20 +48,20 @@ def create_pattern_canvas(baby, row):
     wn_x = 0
     wn_y = 0
     es_x = 0
-    ex_y = 0
+    es_y = 0
     pattern_canvas = Canvas(pattern_wrapper, pattern_canvas_options, scrollregion=(0, 0, 750, 750))
     pattern_canvas.grid(column=0, row=row, sticky=N + W)
     x_mod = int(pattern_canvas_options.get('width'))
     y_mod = int(pattern_canvas_options.get('height'))
-    x_dim_is_bigger = True if baby.dimension[0] > baby.dimension[1] else False
+    x_dim_is_bigger = True if baby.dimension[0] >= baby.dimension[1] else False
     dim_mod = x_mod / (baby.dimension[0] + 2) if x_dim_is_bigger else y_mod / (baby.dimension[1] + 2)
     center_mod = (baby.dimension[0] - baby.dimension[1]) / 2 if x_dim_is_bigger else (baby.dimension[1] - baby.dimension[0]) / 2
     for cell in baby.cells:
         cell.dimension = {'x_dim': dim_mod,
                           'y_dim': dim_mod}
     for cell in baby.cells:
-        x = cell.position['x'] + center_mod if x_dim_is_bigger else cell.position['x']
-        y = cell.position['y'] if x_dim_is_bigger else cell.position['y'] + center_mod
+        x = cell.position['x'] if x_dim_is_bigger else cell.position['x'] + center_mod
+        y = cell.position['y'] + center_mod if x_dim_is_bigger else cell.position['y']
         wn_x = int(cell.dimension['x_dim'] + cell.dimension['x_dim'] * x)
         wn_y = int(cell.dimension['y_dim'] + cell.dimension['y_dim'] * y)
         es_x = int(cell.dimension['x_dim'] * 2 + cell.dimension['x_dim'] * x)

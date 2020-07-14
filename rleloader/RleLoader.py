@@ -3,7 +3,6 @@ from cell import Cell
 import re
 import sys
 
-
 dim_regex = re.compile('(x *=)')
 y_regex = re.compile('(y *=)')
 
@@ -43,19 +42,20 @@ def rle_decode(data, baby):
             if letter == 'o':
                 if int(repeater) == 0:
                     cell = Cell.Cell()
-                    cell.position = {'x': row_index,
-                                     'y': count}
+                    cell.position = {'x': count,
+                                     'y': row_index}
                     baby.cells.add(cell)
                 else:
                     for place in range(int(repeater)):
                         cell = Cell.Cell()
-                        cell.position = {'x': row_index,
-                                        'y':  place }
+                        cell.position = {'x': place,
+                                         'y': row_index}
                         baby.cells.add(cell)
                 repeater = '0'
                 count += 1
 
     return baby
+
 
 # def rle_decode(data, baby):
 #     data.lower()
