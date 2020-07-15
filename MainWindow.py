@@ -10,7 +10,7 @@ import os
 from pattern_canvas.PatternCanvas import PatternCanvas
 
 pattern_wrapper_options = {
-    'width': '200',
+    'width': '220',
     'height': '725',
     'bg': 'White',
     'bd': '5'
@@ -68,7 +68,7 @@ def pattern_clicked(event):
     for widget in habitat_canvas.winfo_children():
         widget.destroy()
     sim_canvas = PatternCanvas(habitat_canvas, habitat_canvas_options)
-    sim_canvas.grid(column=0, row=0, sticky=N+W+S+E)
+    sim_canvas.grid(column=0, row=0, sticky=N + W + S + E)
     create_and_draw_habitat_canvas(event.widget.baby, sim_canvas)
 
 
@@ -89,11 +89,14 @@ def load_pattern(file, row):
 
 # create patterns canvas to show patterns visually
 def create_and_fill_pattern_canvas(baby, row):
+    for widget in habitat_canvas.winfo_children():
+        widget.destroy()
     pattern_canvas = PatternCanvas(pattern_wrapper, pattern_canvas_options)
     pattern_canvas.grid(column=0, row=row, sticky=N + W)
     pattern_canvas.fill_canvas_with_baby_cells(baby)
+
+    pattern_wrapper.create_window(100, 108 * (1 + row) + row * 108, window=pattern_canvas)
     pattern_canvas.bind("<Button-1>", pattern_clicked)
-    pattern_wrapper.create_window(105, 105 * (1 + row) + row * 105, window=pattern_canvas)
 
 
 # menu

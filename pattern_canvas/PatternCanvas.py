@@ -19,7 +19,7 @@ class PatternCanvas(Canvas):
         dim_mod = int(x_mod / (baby.dimension[0] + 2)) if x_dim_is_bigger else int(y_mod / (baby.dimension[1] + 2))
         center_mod = int((baby.dimension[0] - baby.dimension[1]) / 2) if x_dim_is_bigger else int(
             (baby.dimension[1] - baby.dimension[0]) / 2)
-        side_mod = 1 if dim_mod < 15 else 0
+        side_mod = 1 if dim_mod < 10 else 0
         for cell in baby.cells:
             cell.dimension = {'x_dim': dim_mod,
                               'y_dim': dim_mod}
@@ -35,6 +35,28 @@ class PatternCanvas(Canvas):
         self.create_text(100, 10, text=baby.name)
         self.set_baby(baby)
 
-    def fill_canvas_to_live(self, baby):
-        print("sim load")
 
+    def fill_canvas_to_live(self, baby):
+        self.update()
+        x_mod = self.winfo_width()
+        y_mod = self.winfo_height()
+        x_dim_is_bigger = True if baby.dimension[0] >= baby.dimension[1] else False
+        canvas_ratio = x_mod / baby.dimension[0] / 10 if x_dim_is_bigger else y_mod / baby.dimension[0] / 10
+        dim_mod = int(x_mod / (baby.dimension[0] * canvas_ratio + 2)) if x_dim_is_bigger else int(
+            y_mod / (baby.dimension[1] * canvas_ratio + 2))
+        center_mod = int((y_mod - (baby.dimension[1] * canvas_ratio) * 4) / 2)
+        side_mod = int((x_mod - (baby.dimension[0] * canvas_ratio) * 4) / 2)
+        for cell in baby.cells:
+            cell.dimension = {'x_dim': dim_mod,
+                              'y_dim': dim_mod}
+        for cell in baby.cells:
+            x = cell.position['x'] * cell.dimension['x_dim'] + side_mod if x_dim_is_bigger else cell.position['x'] * \
+                cell.dimension['x_dim'] + center_mod
+            y = cell.position['y'] * cell.dimension['y_dim'] + center_mod if x_dim_is_bigger else cell.position['y'] * \
+                cell.dimension['y_dim'] + side_mod
+            wn_x = int(cell.dimension['x_dim'] + cell.dimension['x_dim'] + x)
+            wn_y = int(cell.dimension['y_dim'] + cell.dimension['y_dim'] + y)
+            es_x = int(cell.dimension['x_dim'] * 2 + cell.dimension['x_dim'] + x)
+            es_y = int(cell.dimension['y_dim'] * 2 + cell.dimension['y_dim'] + y)
+            self.create_rectangle(wn_x, wn_y, es_x, es_y, fill='#000000', outline='#D3D3D3')
+            self.update()
