@@ -67,13 +67,17 @@ def start_simulation():
 def pattern_clicked(event):
     for widget in habitat_canvas.winfo_children():
         widget.destroy()
+
+    print(len(event.widget.baby.cells), event.widget.baby.name)
+    print(event.widget.find_closest(event.x, event.y))
     sim_canvas = PatternCanvas(habitat_canvas, habitat_canvas_options)
     sim_canvas.grid(column=0, row=0, sticky=N + W + S + E)
     create_and_draw_habitat_canvas(event.widget.baby, sim_canvas)
 
 
 def create_and_draw_habitat_canvas(baby, sim_canvas):
-    sim_canvas.fill_canvas_to_live(baby)
+    sim_canvas.set_baby(baby)
+    sim_canvas.fill_canvas_to_live()
 
 
 # load patterns to pattern_canvas
@@ -93,8 +97,8 @@ def create_and_fill_pattern_canvas(baby, row):
         widget.destroy()
     pattern_canvas = PatternCanvas(pattern_wrapper, pattern_canvas_options)
     pattern_canvas.grid(column=0, row=row, sticky=N + W)
-    pattern_canvas.fill_canvas_with_baby_cells(baby)
-
+    pattern_canvas.set_baby(baby)
+    pattern_canvas.fill_canvas_with_baby_cells()
     pattern_wrapper.create_window(100, 108 * (1 + row) + row * 108, window=pattern_canvas)
     pattern_canvas.bind("<Button-1>", pattern_clicked)
 
