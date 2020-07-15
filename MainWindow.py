@@ -6,6 +6,8 @@ from simulator import Simulator
 from rleloader import RleLoader
 from pathlib import Path
 from baby import Baby
+import os
+from pattern_canvas.PatternCanvas import PatternCanvas
 
 pattern_wrapper_options = {
     'width': '200',
@@ -33,53 +35,9 @@ root.title('Game of life')
 root.resizable(0, 0)
 
 
-# start app
-def start_callback():
-    print('started')
-
-
 # exit app
 def exit_callback():
     sys.exit()
-
-
-# create pattern canvas to show pattern visually
-def create_pattern_canvas(baby, row):
-    wn_x = 0
-    wn_y = 0
-    es_x = 0
-    es_y = 0
-    pattern_canvas = Canvas(pattern_wrapper, pattern_canvas_options, scrollregion=(0, 0, 750, 750))
-    pattern_canvas.grid(column=0, row=row, sticky=N + W)
-    x_mod = int(pattern_canvas_options.get('width'))
-    y_mod = int(pattern_canvas_options.get('height'))
-    x_dim_is_bigger = True if baby.dimension[0] >= baby.dimension[1] else False
-    dim_mod = int(x_mod / (baby.dimension[0] + 2)) if x_dim_is_bigger else int(y_mod / (baby.dimension[1] + 2))
-    center_mod = int((baby.dimension[0] - baby.dimension[1]) / 2) if x_dim_is_bigger else int((baby.dimension[1] - baby.dimension[0]) / 2)
-    for cell in baby.cells:
-        cell.dimension = {'x_dim': dim_mod,
-                          'y_dim': dim_mod}
-    for cell in baby.cells:
-        x = cell.position['x'] + 1 if x_dim_is_bigger else cell.position['x'] + center_mod
-        y = cell.position['y'] + center_mod if x_dim_is_bigger else cell.position['y'] + 1
-        wn_x = int(cell.dimension['x_dim'] + cell.dimension['x_dim'] * x)
-        wn_y = int(cell.dimension['y_dim'] + cell.dimension['y_dim'] * y)
-        es_x = int(cell.dimension['x_dim'] * 2 + cell.dimension['x_dim'] * x)
-        es_y = int(cell.dimension['y_dim'] * 2 + cell.dimension['y_dim'] * y)
-        pattern_canvas.create_rectangle(wn_x, wn_y, es_x, es_y, fill='#000000', outline='#D3D3D3')
-        pattern_canvas.update()
-
-
-# load pattern to pattern_canvas
-def load_pattern(file, row):
-    extension = Path(file.name).suffix
-    if extension.upper() != ".RLE":
-        messagebox.showinfo("Wrong file type", "Please, load .rle files")
-    else:
-        baby = RleLoader.load_pattern(file)
-        for widget in pattern_wrapper.winfo_children():
-            widget.destroy()
-        create_pattern_canvas(baby, row)
 
 
 # opens file dialog, and starts simulation with chosen file
@@ -94,16 +52,48 @@ def open_file_dialog():
 # open folder to load all files from
 def open_folder_dialog():
     path = filedialog.askdirectory()
-    print(path)
-    base_path = Path(path)
-    files_in_basepath = base_path.iterdir()
-    pattern_wrapper.delete(ALL)
-    for i, item in files_in_basepath:
-        load_pattern(item, i)
+
+    with os.scandir(path) as files:
+        for i, file in enumerate(files, start=0):
+            pattern = open(path + '/' + file.name)
+            load_pattern(pattern, i)
+            pattern.close()
 
 
-def start_simulation_callback():
+def start_simulation():
     print('sim started')
+
+
+def pattern_clicked(event):
+    for widget in habitat_canvas.winfo_children():
+        widget.destroy()
+    sim_canvas = PatternCanvas(habitat_canvas, habitat_canvas_options)
+    sim_canvas.grid(column=0, row=0, sticky=N+W+S+E)
+    create_and_draw_habitat_canvas(event.widget.baby, sim_canvas)
+
+
+def create_and_draw_habitat_canvas(baby, sim_canvas):
+    sim_canvas.fill_canvas_to_live(baby)
+
+
+# load patterns to pattern_canvas
+def load_pattern(file, row):
+    extension = Path(file.name).suffix
+    if extension.upper() != ".RLE":
+        messagebox.showinfo("Wrong file type", "Please, load .rle files")
+    else:
+        baby = RleLoader.load_pattern(file)
+        baby.name = (file.name.split("/")[-1]).split('.')[0]
+        create_and_fill_pattern_canvas(baby, row)
+
+
+# create patterns canvas to show patterns visually
+def create_and_fill_pattern_canvas(baby, row):
+    pattern_canvas = PatternCanvas(pattern_wrapper, pattern_canvas_options)
+    pattern_canvas.grid(column=0, row=row, sticky=N + W)
+    pattern_canvas.fill_canvas_with_baby_cells(baby)
+    pattern_canvas.bind("<Button-1>", pattern_clicked)
+    pattern_wrapper.create_window(105, 105 * (1 + row) + row * 105, window=pattern_canvas)
 
 
 # menu
@@ -111,28 +101,21 @@ menu_bar = Menu(root)
 app_menu = Menu(menu_bar, tearoff=0)
 exit_menu = Menu(menu_bar, tearoff=0)
 menu_bar.add_cascade(label='File', menu=app_menu)
-app_menu.add_command(label="Start", compound='left', command=start_callback)
 app_menu.add_command(label="Load file", compound='left', command=open_file_dialog)
 app_menu.add_command(label="Load folder", compound='left', command=open_folder_dialog)
 app_menu.add_command(label="Exit", compound='left', command=exit_callback)
 root.config(menu=menu_bar)
 
-pattern_wrapper = Canvas(root, pattern_wrapper_options)
-pattern_wrapper.grid(column=0, row=0, rowspan=2, sticky=W + S + N + E)
-# pattern_canvas = Canvas(pattern_wrapper, pattern_canvas_options, scrollregion=(0, 0, 750, 750))
-# pattern_canvas.grid(column=0, row=0, sticky=N + W)
+pattern_wrapper = Canvas(root, pattern_wrapper_options, scrollregion=(0, 0, 1000, 1000))
+pattern_wrapper.grid(column=0, row=0, rowspan=2, sticky=W + S + N + E, )
 vbar = Scrollbar(root, orient=VERTICAL)
 vbar.grid(column=1, row=0, rowspan=2, sticky=W + S + N)
 vbar.config(command=pattern_wrapper.yview)
+
 pattern_wrapper.configure(yscrollcommand=vbar.set)
-pattern_wrapper.config(scrollregion=[0, 0, 800, 800])
-# pattern_canvas2 = Canvas(pattern_wrapper, pattern_canvas_options)
-# pattern_canvas2.grid(column=0, row=1, sticky=N+W)
-# pattern_canvas3 = Canvas(pattern_wrapper, pattern_canvas_options)
-# pattern_canvas3.grid(column=0, row=2, sticky=N+W)
-# pattern_canvas4 = Canvas(pattern_wrapper, pattern_canvas_options)
-# pattern_canvas4.grid(column=0, row=3, sticky=N+W)
-start_button = Button(root, text='Start simulation', command=start_simulation_callback)
+pattern_wrapper.config(scrollregion=pattern_wrapper.bbox(ALL))
+
+start_button = Button(root, text='Start simulation', command=start_simulation)
 start_button.grid(column=0, row=1, sticky=S + E + W)
 
 habitat_canvas = Canvas(root, habitat_canvas_options)

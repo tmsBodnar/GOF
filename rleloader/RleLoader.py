@@ -65,43 +65,6 @@ def rle_decode(data, baby):
     return baby
 
 
-# def rle_decode(data, baby):
-#     data.lower()
-#     count = 0
-#     x = 0
-#     for i in range(len(data)):
-#         repeater = 1
-#         if data[i] == '$':
-#             count = 0;
-#             x += 1
-#         if data[i] == 'b':
-#             if data[i - 1].isdigit():
-#                 count += int(data[i - 1]);
-#             else:
-#                 count += 1;
-#         if data[i] == 'o':
-#
-#             if data[i - 1].isdigit():
-#                 repeater = int(data[i - 1])
-#                 for j in range(repeater):
-#                     cell = Cell.Cell()
-#                     cell.position = {'x': x,
-#                                      'y': j + count}
-#                     baby.cells.add(cell)
-#             else:
-#                 y = count
-#                 cell = Cell.Cell()
-#                 cell.position = {'x': x,
-#                                  'y': y}
-#                 baby.cells.add(cell)
-#             count += 1
-#     return baby
-
-#    for cell in baby.cells:
-#        for position in sorted(cell.position.items()):
-#           print(str(position[0]) + ' : ' + str(position[1]))
-
-
 def set_newborn_cells(line, baby):
     return rle_decode(line, baby)
 
