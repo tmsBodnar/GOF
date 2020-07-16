@@ -3,7 +3,7 @@ from baby import Baby
 
 
 class PatternCanvas(Canvas):
-    baby: Baby
+    baby = Baby.Baby()
 
     def __init__(self, root, *args):
         Canvas.__init__(self, root, *args)

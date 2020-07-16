@@ -1,4 +1,4 @@
-class Cell:
+class Cell(object):
     x: int = 0
     y: int = 0
     x_dim = 0
@@ -7,3 +7,6 @@ class Cell:
                 'y': y}
     dimension = {'x_dim': x_dim,
                  'y_dim': y_dim}
+
+    def __init__(self):
+        super(Cell, self).__init__()

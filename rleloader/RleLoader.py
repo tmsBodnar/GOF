@@ -6,9 +6,6 @@ import sys
 dim_regex = re.compile('(x *=)')
 y_regex = re.compile('(y *=)')
 
-dimension = (10, 10)
-cells = set()
-
 
 def set_pattern_dimension(line, baby):
     match = re.search(r"(x *= )\d*", line)
@@ -25,6 +22,7 @@ def set_pattern_dimension(line, baby):
 
 
 def rle_decode(data, baby):
+    cells = set()
     data.lower()
     row_list = data.rsplit('$')
     for row_index, row in enumerate(row_list, start=0):
@@ -51,17 +49,18 @@ def rle_decode(data, baby):
                     cell = Cell.Cell()
                     cell.position = {'x': count,
                                      'y': row_index}
-                    baby.cells.add(cell)
+                    cells.add(cell)
                 else:
                     for place in range(int(repeater)):
                         cell = Cell.Cell()
                         cell.position = {'x': place + repeater_pos,
                                          'y': row_index}
-                        baby.cells.add(cell)
+                        cells.add(cell)
                 repeater = '0'
                 count += 1
                 repeater_pos = 0
                 last_digit_value = ''
+    baby.cells = cells
     return baby
 
 
@@ -70,8 +69,7 @@ def set_newborn_cells(line, baby):
 
 
 def load_pattern(file):
-    cells.clear()
-    baby = Baby.Baby(dimension, cells)
+    baby = Baby.Baby()
     pattern_line = ''
     dimension_index = sys.maxsize;
     for i, line in enumerate(file):

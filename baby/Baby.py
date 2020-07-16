@@ -1,9 +1,7 @@
-class Baby:
+class Baby(object):
+    dimension = tuple()
+    cells = set()
+    name = ''
 
-    dimension: tuple()
-    cells: set()
-    name: str
-
-    def __init__(self, dimension, cells):
-        self.dimension = dimension
-        self.cells = cells
+    def __init__(self):
+        super(Baby, self).__init__()

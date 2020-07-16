@@ -72,10 +72,10 @@ def pattern_clicked(event):
     print(event.widget.find_closest(event.x, event.y))
     sim_canvas = PatternCanvas(habitat_canvas, habitat_canvas_options)
     sim_canvas.grid(column=0, row=0, sticky=N + W + S + E)
-    create_and_draw_habitat_canvas(event.widget.baby, sim_canvas)
+    create_and_draw_sim_canvas(event.widget.baby, sim_canvas)
 
 
-def create_and_draw_habitat_canvas(baby, sim_canvas):
+def create_and_draw_sim_canvas(baby, sim_canvas):
     sim_canvas.set_baby(baby)
     sim_canvas.fill_canvas_to_live()
 
