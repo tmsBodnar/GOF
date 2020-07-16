@@ -57,3 +57,4 @@ class PatternCanvas(Canvas):
             es_x = int(cell.dimension['x_dim'] * 2 + cell.dimension['x_dim'] + x)
             es_y = int(cell.dimension['y_dim'] * 2 + cell.dimension['y_dim'] + y)
             self.create_rectangle(wn_x, wn_y, es_x, es_y, fill='#000000', outline='#D3D3D3')
+        self.update()
