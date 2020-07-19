@@ -46,15 +46,11 @@ def rle_decode(data, baby):
                 last_digit_value = ''
             elif letter == 'o':
                 if int(repeater) == 0:
-                    cell = Cell.Cell()
-                    cell.position = {'x': count,
-                                     'y': row_index}
+                    cell = Cell.Cell(count, row_index)
                     cells.add(cell)
                 else:
                     for place in range(int(repeater)):
-                        cell = Cell.Cell()
-                        cell.position = {'x': place + repeater_pos,
-                                         'y': row_index}
+                        cell = Cell.Cell(place + repeater_pos, row_index)
                         cells.add(cell)
                 repeater = '0'
                 count += 1

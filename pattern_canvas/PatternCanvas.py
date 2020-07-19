@@ -24,8 +24,8 @@ class PatternCanvas(Canvas):
             cell.dimension = {'x_dim': dim_mod,
                               'y_dim': dim_mod}
         for cell in self.baby.cells:
-            x = cell.position['x'] + side_mod if x_dim_is_bigger else cell.position['x'] + center_mod
-            y = cell.position['y'] + center_mod if x_dim_is_bigger else cell.position['y'] + side_mod
+            x = cell.position[0] + side_mod if x_dim_is_bigger else cell.position[0] + center_mod
+            y = cell.position[1] + center_mod if x_dim_is_bigger else cell.position[1] + side_mod
             wn_x = int(cell.dimension['x_dim'] + cell.dimension['x_dim'] * x)
             wn_y = int(cell.dimension['y_dim'] + cell.dimension['y_dim'] * y)
             es_x = int(cell.dimension['x_dim'] * 2 + cell.dimension['x_dim'] * x)
@@ -47,10 +47,11 @@ class PatternCanvas(Canvas):
         for cell in self.baby.cells:
             cell.dimension = {'x_dim': dim_mod,
                               'y_dim': dim_mod}
+        self.delete('all')
         for cell in self.baby.cells:
-            x = cell.position['x'] * cell.dimension['x_dim'] + side_mod if x_dim_is_bigger else cell.position['x'] * \
+            x = cell.position[0] * cell.dimension['x_dim'] + side_mod if x_dim_is_bigger else cell.position[0] * \
                 cell.dimension['x_dim'] + center_mod
-            y = cell.position['y'] * cell.dimension['y_dim'] + center_mod if x_dim_is_bigger else cell.position['y'] * \
+            y = cell.position[1] * cell.dimension['y_dim'] + center_mod if x_dim_is_bigger else cell.position[1] * \
                 cell.dimension['y_dim'] + side_mod
             wn_x = int(cell.dimension['x_dim'] + cell.dimension['x_dim'] + x)
             wn_y = int(cell.dimension['y_dim'] + cell.dimension['y_dim'] + y)
