@@ -37,7 +37,7 @@ def rle_decode(data, baby):
                 if last_digit_value != '':
                     count -= int(last_digit_value) - 1
                 count += int(repeater) - 1
-                repeater_pos = count - int(repeater) + 1 if count - int(repeater) > 0 else 0
+                repeater_pos = count - int(repeater) + 1 if count - int(repeater) >= 0 else 0
                 last_digit_value += letter
             elif letter == 'b':
                 repeater = '0'

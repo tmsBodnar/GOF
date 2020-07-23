@@ -56,6 +56,7 @@ def open_folder_dialog():
 
     with os.scandir(path) as files:
         for i, file in enumerate(files, start=0):
+
             pattern = open(path + '/' + file.name)
             load_pattern(pattern, i)
             pattern.close()
@@ -99,6 +100,7 @@ def create_and_fill_pattern_canvas(baby, row):
     pattern_canvas.fill_canvas_with_baby_cells()
     pattern_wrapper.create_window(100, 108 * (1 + row) + row * 108, window=pattern_canvas)
     pattern_canvas.bind("<Button-1>", pattern_clicked)
+    pattern_wrapper.configure(scrollregion=pattern_wrapper.bbox(ALL))
 
 
 def update_size_scale(event):
