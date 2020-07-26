@@ -21,17 +21,37 @@ def set_pattern_dimension(line, baby):
             baby.dimension = (x, y)
 
 
+def find_and_set_row_multipliers(data):
+    regex = re.compile("\d+\$", re.IGNORECASE)
+    result = data
+    for match in regex.finditer(data):
+        start = -1
+        row_multiplier = 0
+        replaced = ''
+        start = match.start()
+        stop = match.end()
+        match_row_multiplier_pattern = match.group()
+        multiplier_count = re.search(r"\d+", match_row_multiplier_pattern)
+        if multiplier_count:
+            row_multiplier = int(multiplier_count.group())
+            for indx in range(row_multiplier):
+                replaced += '$'
+        data = result.replace(result[start: stop], replaced )
+    return data
+
+
 def rle_decode(data, baby):
     cells = set()
     data.lower()
-    row_list = data.rsplit('$')
+    data_rows = find_and_set_row_multipliers(data)
+
+    row_list = data_rows.rsplit('$')
     for row_index, row in enumerate(row_list, start=0):
         repeater_pos = 0
         repeater = '0'
         count = 0
         last_digit_value = ''
         for index, letter in enumerate(row, start=0):
-
             if letter.isdigit():
                 repeater += letter
                 if last_digit_value != '':

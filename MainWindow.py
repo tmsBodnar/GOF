@@ -122,7 +122,7 @@ app_menu.add_command(label="Exit", compound='left', command=exit_callback)
 root.config(menu=menu_bar)
 
 pattern_wrapper = Canvas(root, pattern_wrapper_options, scrollregion=(0, 0, 1000, 1000))
-pattern_wrapper.grid(column=0, row=0, rowspan=1, sticky=W + S + N + E, padx=(2, 0), pady=(2, 2))
+pattern_wrapper.grid(column=0, row=0, rowspan=2, sticky=W + S + N + E, padx=(2, 0), pady=(2, 2))
 vbar = Scrollbar(root, orient=VERTICAL)
 vbar.grid(column=1, row=0, rowspan=1, sticky=W + S + N)
 vbar.config(command=pattern_wrapper.yview)
@@ -130,19 +130,16 @@ vbar.config(command=pattern_wrapper.yview)
 pattern_wrapper.configure(yscrollcommand=vbar.set)
 pattern_wrapper.config(scrollregion=pattern_wrapper.bbox(ALL))
 
-start_button = Button(root, text='Start simulation', command=start_simulation)
-start_button.grid(column=0, row=1, sticky=E + W, padx=2, pady=2)
-
 sim_canvas = PatternCanvas(root, habitat_canvas_options)
 sim_canvas.grid(column=2, row=0, sticky=E + N, columnspan=2, padx=2, pady=2)
 
-size_scale = Scale(root, from_=0, to=100, length=250, orient=HORIZONTAL, label='Zoom', showvalue=0,
+size_scale = Scale(root, from_=0, to=100, length=200, orient=HORIZONTAL, label='Zoom', showvalue=0,
                    command=update_size_scale, resolution=5)
 size_scale.set(1)
 size_scale.grid(column=2, row=1, sticky=W + S)
 size_scale.grid_columnconfigure(3, weight=2)
 
-speed_scale = Scale(root, from_=100, to=1, length=250, orient=HORIZONTAL, label='Speed', showvalue=0,
+speed_scale = Scale(root, from_=100, to=1, length=200, orient=HORIZONTAL, label='Speed', showvalue=0,
                     command=update_speed_scale)
 speed_scale.set(1)
 speed_scale.grid(column=3, row=1, sticky=W + S, )
