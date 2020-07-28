@@ -65,13 +65,13 @@ def open_folder_dialog():
 def pattern_clicked(event):
     sim_canvas.delete(ALL)
     create_and_draw_sim_canvas(event.widget.baby)
+    start_simulation()
 
 
 def start_simulation():
-    if len(sim_canvas.baby.cells) > 0:
-        Simulator.start_simulation(sim_canvas)
-    else:
-        messagebox.showinfo("Choose a pattern!", "Please, click on a pattern")
+    while len(sim_canvas.baby.cells) > 0:
+        root.after(50, Simulator.start_simulation(sim_canvas))
+    messagebox.showinfo("Choose a pattern!", "Please, click on a pattern")
 
 
 def create_and_draw_sim_canvas(baby):

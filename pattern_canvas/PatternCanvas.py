@@ -43,7 +43,8 @@ class PatternCanvas(Canvas):
         dim_mod = int(x_mod / (self.baby.dimension[0] * canvas_ratio + 2)) if x_dim_is_bigger else int(
             y_mod / (self.baby.dimension[1] * canvas_ratio + 2))
         center_mod = int((y_mod - (self.baby.dimension[1] * canvas_ratio) * 4) / 2)
-        side_mod = int((x_mod - (self.baby.dimension[0] * canvas_ratio) * 4) / 2)
+  #      side_mod = int((x_mod - (self.baby.dimension[0] * canvas_ratio) * 4) / 2)
+        side_mod = 1
         for cell in self.baby.cells:
             cell.dimension = {'x_dim': dim_mod,
                               'y_dim': dim_mod}
