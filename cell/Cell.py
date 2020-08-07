@@ -19,6 +19,12 @@ class Cell(object):
             self.set_neighbours()
             super(Cell, self).__init__()
 
+    def __eq__(self, other):
+        return self.position == other.position
+
+    def __hash__(self):
+        return hash(self.position)
+
     def set_position(self, x, y):
         self.x = x
         self.y = y

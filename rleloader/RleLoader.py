@@ -24,8 +24,8 @@ def set_pattern_dimension(line, baby):
 def find_and_set_row_multipliers(data):
     regex = re.compile("\d+\$", re.IGNORECASE)
     result = data
-    for match in regex.finditer(data):
-        start = -1
+    index_mod = 0
+    for match in regex.finditer(result):
         row_multiplier = 0
         replaced = ''
         start = match.start()
@@ -36,8 +36,10 @@ def find_and_set_row_multipliers(data):
             row_multiplier = int(multiplier_count.group())
             for indx in range(row_multiplier):
                 replaced += '$'
-        data = result.replace(result[start: stop], replaced )
-    return data
+        temp_pattern = result[start + index_mod: stop + index_mod]
+        result = result.replace(temp_pattern, replaced, 1 )
+        index_mod = index_mod + row_multiplier - len(multiplier_count.group()) - 1
+    return result
 
 
 def rle_decode(data, baby):
@@ -77,6 +79,7 @@ def rle_decode(data, baby):
                 repeater_pos = 0
                 last_digit_value = ''
     baby.cells = cells
+    baby.calculate_positions_and_neighbours_set(cells)
     return baby
 
 

@@ -56,7 +56,6 @@ def open_folder_dialog():
 
     with os.scandir(path) as files:
         for i, file in enumerate(files, start=0):
-
             pattern = open(path + '/' + file.name)
             load_pattern(pattern, i)
             pattern.close()
@@ -70,7 +69,8 @@ def pattern_clicked(event):
 
 def start_simulation():
     while len(sim_canvas.baby.cells) > 0:
-        root.after(50, Simulator.start_simulation(sim_canvas))
+        print(len(sim_canvas.baby.cells))
+        Simulator.start_simulation(sim_canvas)
     messagebox.showinfo("Choose a pattern!", "Please, click on a pattern")
 
 
@@ -139,10 +139,30 @@ size_scale.set(1)
 size_scale.grid(column=2, row=1, sticky=W + S)
 size_scale.grid_columnconfigure(3, weight=2)
 
-speed_scale = Scale(root, from_=100, to=1, length=200, orient=HORIZONTAL, label='Speed', showvalue=0,
-                    command=update_speed_scale)
-speed_scale.set(1)
-speed_scale.grid(column=3, row=1, sticky=W + S, )
-speed_scale.grid_columnconfigure(5, weight=2)
+play_icon = PhotoImage(file="src/play.png")
+pause_icon = PhotoImage(file="src/pause.png")
+next_icon = PhotoImage(file="src/next.png")
+
+button_wrapper = Entry(root)
+button_wrapper.grid(column=3, row=1, sticky=W + N, padx=2, pady=2)
+button_wrapper.grid_columnconfigure(5, weight=2)
+
+play_button = Button(button_wrapper, image=play_icon, command=start_simulation, height=25, width=25)
+play_button.grid(column=0, row=0, sticky=W + N, padx=2, pady=2)
+play_button.grid_columnconfigure(0, weight=2)
+
+pause_button = Button(button_wrapper, image=pause_icon, command=start_simulation, height=25, width=25)
+pause_button.grid(column=1, row=0, sticky=W + N, padx=2, pady=2)
+pause_button.grid_columnconfigure(0, weight=2)
+
+next_button = Button(button_wrapper, image=next_icon, command=start_simulation, height=25, width=25)
+next_button.grid(column=2, row=0, sticky=W + N, padx=2, pady=2)
+next_button.grid_columnconfigure(0, weight=2)
+
+# speed_scale = Scale(root, from_=100, to=1, length=200, orient=HORIZONTAL, label='Speed', showvalue=0,
+#                     command=update_speed_scale)
+# speed_scale.set(1)
+# speed_scale.grid(column=3, row=1, sticky=W + S, )
+# speed_scale.grid_columnconfigure(5, weight=2)
 
 root.mainloop()
