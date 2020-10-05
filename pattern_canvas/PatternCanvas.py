@@ -1,6 +1,9 @@
 from tkinter import Canvas
 from baby import Baby
 
+x_size = 1
+y_size = 1
+
 
 class PatternCanvas(Canvas):
     baby = Baby.Baby()
@@ -12,9 +15,14 @@ class PatternCanvas(Canvas):
         self.baby = baby
 
     def fill_canvas_with_baby_cells(self):
+        global x_size
+        global y_size
         self.update()
-        x_mod = self.winfo_width()
-        y_mod = self.winfo_height()
+        x_size = self.winfo_width()
+        y_size = self.winfo_height()
+        print("size at start", x_size, y_size)
+        x_mod = x_size
+        y_mod = y_size
         x_dim_is_bigger = True if self.baby.dimension[0] >= self.baby.dimension[1] else False
         dim_mod = int(x_mod / (self.baby.dimension[0] + 2)) if x_dim_is_bigger else int(y_mod / (self.baby.dimension[1] + 2))
         center_mod = int((self.baby.dimension[0] - self.baby.dimension[1]) / 2) if x_dim_is_bigger else int(
@@ -35,16 +43,17 @@ class PatternCanvas(Canvas):
         self.create_text(100, 10, text=self.baby.name)
 
     def fill_canvas_to_live(self):
+        global x_size
+        global y_size
         self.update()
-        x_mod = self.winfo_width()
-        y_mod = self.winfo_height()
+        x_mod = x_size
+        y_mod = y_size
         x_dim_is_bigger = True if self.baby.dimension[0] >= self.baby.dimension[1] else False
         canvas_ratio = x_mod / self.baby.dimension[0] / 10 if x_dim_is_bigger else y_mod / self.baby.dimension[0] / 10
         dim_mod = int(x_mod / (self.baby.dimension[0] * canvas_ratio + 2)) if x_dim_is_bigger else int(
             y_mod / (self.baby.dimension[1] * canvas_ratio + 2))
         center_mod = int((y_mod - (self.baby.dimension[1] * canvas_ratio) * 4) / 2)
         side_mod = int((x_mod - (self.baby.dimension[0] * canvas_ratio) * 4) / 2)
-        side_mod = 1
         for cell in self.baby.cells:
             cell.dimension = {'x_dim': dim_mod,
                               'y_dim': dim_mod}
@@ -60,3 +69,13 @@ class PatternCanvas(Canvas):
             es_y = int(cell.dimension['y_dim'] * 2 + cell.dimension['y_dim'] + y)
             self.create_rectangle(wn_x, wn_y, es_x, es_y, fill='#000000', outline='#D3D3D3')
         self.update()
+
+    def change_size(self, size_value):
+        global x_size
+        global y_size
+        x_size *= size_value
+        y_size *= size_value
+        self.scale('all', 0, 0, size_value, size_value)
+
+    def change_speed(speed_value):
+        temp = 1

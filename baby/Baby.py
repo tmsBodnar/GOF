@@ -14,4 +14,3 @@ class Baby(object):
         for cell in cells:
             self.cells_positions.add(cell.position)
             self.neighbours = self.neighbours.union(cell.neighbours)
-        #self.neighbours.difference_update(self.cells_positions)

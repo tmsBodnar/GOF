@@ -1,6 +1,5 @@
 from cell.Cell import Cell
 
-pre_size = 0
 temp_cells = set()
 
 
@@ -22,7 +21,6 @@ def calculate_next_gen_cells(sim_canvas):
         dead = len(temp)
         if dead < 2 or dead > 3:
             temp_cells.remove(cell)
-
         for neighbour in cell.neighbours:
             neighbour_cell = Cell(neighbour[0], neighbour[1])
             neighbour_cell.neighbours.intersection_update(sim_canvas.baby.cells_positions)
@@ -32,15 +30,3 @@ def calculate_next_gen_cells(sim_canvas):
                 temp_cells.add(new_cell)
 
 
-def change_size(size_value, hab_canvas):
-    global pre_size
-    if pre_size < float(size_value) or pre_size == 0:
-        size_mod = 0.9
-    else:
-        size_mod = 1.111111
-    hab_canvas.scale('all', 0, 0, size_mod, size_mod)
-    pre_size = float(size_value)
-
-
-def change_speed(speed_value):
-    temp = 1
