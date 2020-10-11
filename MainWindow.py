@@ -33,8 +33,10 @@ class MainWindow:
     }
     patterns = []
     is_simulated = False
+    is_play = False
     timeout = 100
     timer_id = 0
+    loaded_baby: Baby
     root: tk
 
     # exit app
@@ -49,6 +51,8 @@ class MainWindow:
             for widget in self.pattern_wrapper.winfo_children():
                 widget.destroy()
             self.load_pattern(file, 0)
+        self.sim_canvas.delete(ALL)
+        self.create_and_draw_sim_canvas(self.loaded_baby)
 
     # open folder to load all files from
     def open_folder_dialog(self):
@@ -93,9 +97,9 @@ class MainWindow:
         if extension.upper() != ".RLE":
             messagebox.showinfo("Wrong file type", "Please, load .rle files")
         else:
-            baby = RleLoader.load_pattern(file)
-            baby.name = (file.name.split("/")[-1]).split('.')[0]
-            self.create_and_fill_pattern_canvas(baby, row)
+            self.loaded_baby = RleLoader.load_pattern(file)
+            self.loaded_baby.name = (file.name.split("/")[-1]).split('.')[0]
+            self.create_and_fill_pattern_canvas(self.loaded_baby, row)
 
     # create patterns canvas to show patterns visually
     def create_and_fill_pattern_canvas(self, baby, row):
@@ -136,8 +140,16 @@ class MainWindow:
         self.simulation()
 
     def callback_play(self, event):
-        self.is_simulated = True
-        self.simulation()
+        self.is_play = not self.is_play
+        if self.is_play:
+            self.play_button['image'] = self.pause_icon
+            self.is_simulated = True
+            self.simulation()
+        else:
+            self.play_button['image'] = self.play_icon
+            self.is_simulated = False
+            self.master.after_cancel(self.timer_id)
+            self.simulation()
 
     def action(self):
         self.output.insert(Tk.END, self.variable.get())
@@ -172,14 +184,17 @@ class MainWindow:
         self.zoom_wrapper.grid(column=2, row=1, sticky=W + S, padx=4, pady=6)
         self.zoom_wrapper.grid_columnconfigure(2, weight=1)
 
-        self.zoom_plus = Button(self.zoom_wrapper, text='+')
+        self.plus_icon = PhotoImage(file="src/plus.png")
+        self.minus_icon = PhotoImage(file="src/minus.png")
+
+        self.zoom_plus = Button(self.zoom_wrapper, image=self.plus_icon, height=25, width=25)
         self.zoom_plus.grid(column=2, row=1, sticky=W + S)
         self.zoom_plus.bind('<Button-1>', self.callback_zoom_plus)
 
         self.zoom_text = Label(self.zoom_wrapper, text='Zoom')
         self.zoom_text.grid(column=1, row=1, sticky=W + S, padx=4, pady=4)
 
-        self.zoom_minus = Button(self.zoom_wrapper, text='-')
+        self.zoom_minus = Button(self.zoom_wrapper, image=self.minus_icon, height=25, width=25)
         self.zoom_minus.grid(column=0, row=1, sticky=W + S)
         self.zoom_minus.bind('<Button-1>', self.callback_zoom_minus)
 
@@ -187,14 +202,14 @@ class MainWindow:
         self.speed_wrapper.grid(column=3, row=1, sticky=W + S, padx=4, pady=6)
         self.speed_wrapper.grid_columnconfigure(3, weight=1)
 
-        self.speed_plus = Button(self.speed_wrapper, text='+')
+        self.speed_plus = Button(self.speed_wrapper, image=self.plus_icon, height=25, width=25)
         self.speed_plus.grid(column=2, row=1, sticky=W + S)
         self.speed_plus.bind('<Button-1>', self.callback_speed_plus)
 
         self.speed_text = Label(self.speed_wrapper, text='Speed')
         self.speed_text.grid(column=1, row=1, sticky=W + S, padx=4, pady=4)
 
-        self.speed_minus = Button(self.speed_wrapper, text='-')
+        self.speed_minus = Button(self.speed_wrapper, image=self.minus_icon, height=25, width=25)
         self.speed_minus.grid(column=0, row=1, sticky=W + S)
         self.speed_minus.bind('<Button-1>', self.callback_speed_minus)
 
@@ -209,12 +224,6 @@ class MainWindow:
         self.play_button = Button(self.button_wrapper, image=self.play_icon, height=25, width=25)
         self.play_button.grid(column=0, row=0, sticky=W + N, padx=4, pady=4)
         self.play_button.bind('<Button-1>', self.callback_play)
-        # play_button.grid_columnconfigure(0, weight=2)
-
-        self.pause_button = Button(self.button_wrapper, image=self.pause_icon, height=25, width=25)
-        self.pause_button.grid(column=1, row=0, sticky=W + N, padx=4, pady=4)
-        self.pause_button.bind('<Button-1>', self.callback_pause)
-        # pause_button.grid_columnconfigure(0, weight=2)
 
         self.next_button = Button(self.button_wrapper, image=self.next_icon, height=25, width=25)
         self.next_button.grid(column=2, row=0, sticky=W + N, padx=4, pady=4)
