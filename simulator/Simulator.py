@@ -3,12 +3,12 @@ from cell.Cell import Cell
 temp_cells = set()
 
 
-def start_simulation(sim_canvas):
+def start_simulation(sim_canvas, size_mod):
     calculate_next_gen_cells(sim_canvas)
     sim_canvas.baby.cells.clear()
     sim_canvas.baby.cells = temp_cells.copy()
     sim_canvas.baby.calculate_positions_and_neighbours_set(sim_canvas.baby.cells)
-    sim_canvas.fill_canvas_to_live()
+    sim_canvas.fill_canvas_to_live(size_mod)
 
 
 def calculate_next_gen_cells(sim_canvas):

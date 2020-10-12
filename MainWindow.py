@@ -37,6 +37,7 @@ class MainWindow:
     timeout = 100
     timer_id = 0
     loaded_baby: Baby
+    size_mod = 1
     root: tk
 
     # exit app
@@ -46,6 +47,7 @@ class MainWindow:
 
     # opens file dialog, and starts simulation with chosen file
     def open_file_dialog(self):
+        self.is_simulated = False
         file = filedialog.askopenfile(mode='r')
         if file is not None:
             for widget in self.pattern_wrapper.winfo_children():
@@ -57,7 +59,7 @@ class MainWindow:
     # open folder to load all files from
     def open_folder_dialog(self):
         path = filedialog.askdirectory()
-
+        self.is_simulated = False
         with os.scandir(path) as files:
             for i, file in enumerate(files, start=0):
                 pattern = open(path + '/' + file.name)
@@ -67,6 +69,7 @@ class MainWindow:
     def pattern_clicked(self, event):
         self.sim_canvas.delete(ALL)
         self.create_and_draw_sim_canvas(event.widget.baby)
+        self.is_simulated = False
 
     def simulation_start(self):
         Simulator.start_simulation(self.sim_canvas)
@@ -74,7 +77,7 @@ class MainWindow:
     def simulation(self):
         if len(self.sim_canvas.baby.cells) > 0:
             if self.is_simulated:
-                Simulator.start_simulation(self.sim_canvas)
+                Simulator.start_simulation(self.sim_canvas, self.size_mod)
                 self.timer_id = self.master.after(self.timeout, self.simulation)
             else:
                 self.stop_simulation()
@@ -89,7 +92,7 @@ class MainWindow:
 
     def create_and_draw_sim_canvas(self, baby):
         self.sim_canvas.set_baby(baby)
-        self.sim_canvas.fill_canvas_to_live()
+        self.sim_canvas.fill_canvas_to_live(self.size_mod)
 
     # load patterns to pattern_canvas
     def load_pattern(self, file, row):
@@ -115,12 +118,14 @@ class MainWindow:
 
     def callback_zoom_plus(self, event):
         self.is_simulated = False
-        self.sim_canvas.change_size(1.3)
+      ##  self.sim_canvas.change_size(1.3)
+        self.size_mod += 0.01
         self.is_simulated = True
 
     def callback_zoom_minus(self, event):
         self.is_simulated = False
-        self.sim_canvas.change_size(0.7)
+      ##  self.sim_canvas.change_size(0.7)
+        self.size_mod += -0.01
         self.is_simulated = True
 
     def callback_speed_plus(self, event):
@@ -145,7 +150,9 @@ class MainWindow:
             self.play_button['image'] = self.pause_icon
             self.is_simulated = True
             self.simulation()
+            self.next_button['state'] = 'disabled'
         else:
+            self.next_button['state'] = 'normal'
             self.play_button['image'] = self.play_icon
             self.is_simulated = False
             self.master.after_cancel(self.timer_id)
