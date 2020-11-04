@@ -93,6 +93,13 @@ class MainWindow:
     def create_and_draw_sim_canvas(self, baby):
         self.sim_canvas.set_baby(baby)
         self.sim_canvas.fill_canvas_to_live(self.size_mod)
+        self.zoom_plus['state'] = tk.NORMAL
+        self.zoom_minus['state'] = tk.NORMAL
+        self.speed_plus['state'] = tk.NORMAL
+        self.speed_minus['state'] = tk.NORMAL
+        self.play_button['state'] = tk.NORMAL
+        self.next_button['state'] = tk.NORMAL
+        self.delete_button['state'] = tk.NORMAL
 
     # load patterns to pattern_canvas
     def load_pattern(self, file, row):
@@ -116,16 +123,19 @@ class MainWindow:
         pattern_canvas.bind("<Button-1>", self.pattern_clicked)
         self.pattern_wrapper.configure(scrollregion=self.pattern_wrapper.bbox(ALL))
 
+
     def callback_zoom_plus(self, event):
         self.is_simulated = False
-      ##  self.sim_canvas.change_size(1.3)
-        self.size_mod += 0.01
+        if self.size_mod < 1.4:
+            self.size_mod += 0.01
+        print(self.size_mod)
         self.is_simulated = True
 
     def callback_zoom_minus(self, event):
         self.is_simulated = False
-      ##  self.sim_canvas.change_size(0.7)
-        self.size_mod += -0.01
+        if self.size_mod > 0.93:
+            self.size_mod += -0.01
+        print(self.size_mod)
         self.is_simulated = True
 
     def callback_speed_plus(self, event):
@@ -158,6 +168,13 @@ class MainWindow:
             self.master.after_cancel(self.timer_id)
             self.simulation()
 
+    def callback_delete(self, event):
+        self.is_simulated = False
+        if self.timer_id :
+            self.master.after_cancel(self.timer_id)
+        self.sim_canvas.delete(ALL)
+
+
     def action(self):
         self.output.insert(Tk.END, self.variable.get())
 
@@ -187,55 +204,62 @@ class MainWindow:
         self.app_menu.add_command(label="Exit", compound='left', command=self.exit_callback)
         self.master.config(menu=self.menu_bar)
 
-        self.zoom_wrapper = Entry(master)
+        self.zoom_wrapper = Frame(master)
+        self.zoom_wrapper.config(bd=1, relief=tk.GROOVE)
         self.zoom_wrapper.grid(column=2, row=1, sticky=W + S, padx=4, pady=6)
         self.zoom_wrapper.grid_columnconfigure(2, weight=1)
 
         self.plus_icon = PhotoImage(file="src/plus.png")
         self.minus_icon = PhotoImage(file="src/minus.png")
 
-        self.zoom_plus = Button(self.zoom_wrapper, image=self.plus_icon, height=25, width=25)
+        self.zoom_plus = Button(self.zoom_wrapper, image=self.plus_icon, height=25, width=25, state=tk.DISABLED)
         self.zoom_plus.grid(column=2, row=1, sticky=W + S)
         self.zoom_plus.bind('<Button-1>', self.callback_zoom_plus)
 
         self.zoom_text = Label(self.zoom_wrapper, text='Zoom')
         self.zoom_text.grid(column=1, row=1, sticky=W + S, padx=4, pady=4)
 
-        self.zoom_minus = Button(self.zoom_wrapper, image=self.minus_icon, height=25, width=25)
+        self.zoom_minus = Button(self.zoom_wrapper, image=self.minus_icon, height=25, width=25, state=tk.DISABLED)
         self.zoom_minus.grid(column=0, row=1, sticky=W + S)
         self.zoom_minus.bind('<Button-1>', self.callback_zoom_minus)
 
-        self.speed_wrapper = Entry(master)
+        self.speed_wrapper = Frame(master)
+        self.speed_wrapper.config(bd=1, relief=tk.GROOVE)
         self.speed_wrapper.grid(column=3, row=1, sticky=W + S, padx=4, pady=6)
-        self.speed_wrapper.grid_columnconfigure(3, weight=1)
+        self.speed_wrapper.grid_columnconfigure(2, weight=1)
 
-        self.speed_plus = Button(self.speed_wrapper, image=self.plus_icon, height=25, width=25)
+        self.speed_plus = Button(self.speed_wrapper, image=self.plus_icon, height=25, width=25, state=tk.DISABLED)
         self.speed_plus.grid(column=2, row=1, sticky=W + S)
         self.speed_plus.bind('<Button-1>', self.callback_speed_plus)
 
         self.speed_text = Label(self.speed_wrapper, text='Speed')
         self.speed_text.grid(column=1, row=1, sticky=W + S, padx=4, pady=4)
 
-        self.speed_minus = Button(self.speed_wrapper, image=self.minus_icon, height=25, width=25)
+        self.speed_minus = Button(self.speed_wrapper, image=self.minus_icon, height=25, width=25, state=tk.DISABLED)
         self.speed_minus.grid(column=0, row=1, sticky=W + S)
         self.speed_minus.bind('<Button-1>', self.callback_speed_minus)
 
         self.play_icon = PhotoImage(file="src/play.png")
         self.pause_icon = PhotoImage(file="src/pause.png")
         self.next_icon = PhotoImage(file="src/next.png")
+        self.stop_icon = PhotoImage(file="src/stop.png")
 
-        self.button_wrapper = Entry(master)
-        self.button_wrapper.grid(column=4, row=1, sticky=W + S, padx=6, pady=3)
-        self.button_wrapper.grid_columnconfigure(4, weight=2)
+        self.button_wrapper = Frame(master)
+        self.button_wrapper.config(bd=1, relief=tk.GROOVE)
+        self.button_wrapper.grid(column=4, row=1, sticky=W + S, padx=6, pady=3, )
+        self.button_wrapper.grid_columnconfigure(4, weight=1)
 
-        self.play_button = Button(self.button_wrapper, image=self.play_icon, height=25, width=25)
+        self.play_button = Button(self.button_wrapper, image=self.play_icon, height=25, width=25, state=tk.DISABLED)
         self.play_button.grid(column=0, row=0, sticky=W + N, padx=4, pady=4)
         self.play_button.bind('<Button-1>', self.callback_play)
 
-        self.next_button = Button(self.button_wrapper, image=self.next_icon, height=25, width=25)
-        self.next_button.grid(column=2, row=0, sticky=W + N, padx=4, pady=4)
+        self.next_button = Button(self.button_wrapper, image=self.next_icon, height=25, width=25, state=tk.DISABLED)
+        self.next_button.grid(column=1, row=0, sticky=W + N, padx=4, pady=4)
         self.next_button.bind('<Button-1>', self.callback_step)
-        # next_button.grid_columnconfigure(0, weight=2)
+
+        self.delete_button = Button(self.button_wrapper, image=self.stop_icon, height=25, width=25, state=tk.DISABLED)
+        self.delete_button.grid(column=2, row=0, sticky=E + N, padx=4, pady=4)
+        self.delete_button.bind('<Button-1>', self.callback_delete)
 
 
 root = Tk()

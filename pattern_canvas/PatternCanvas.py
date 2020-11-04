@@ -3,7 +3,7 @@ from baby import Baby
 
 x_size = 1
 y_size = 1
-pre_size_mod = 1;
+pre_size_mod = 1
 
 
 class PatternCanvas(Canvas):
@@ -57,10 +57,8 @@ class PatternCanvas(Canvas):
         canvas_ratio = x_mod / self.baby.dimension[0] / 10 if x_dim_is_bigger else y_mod / self.baby.dimension[0] / 10
         dim_mod = int(x_mod / (self.baby.dimension[0] * canvas_ratio + 20)) if x_dim_is_bigger else int(
             y_mod / (self.baby.dimension[1] * canvas_ratio + 20))
-        center_mod_y = int((y_mod - (self.baby.dimension[1] * canvas_ratio) * 4) / 2)
-        center_mod_x = int((x_mod - (self.baby.dimension[0] * canvas_ratio) * 4) / 2)
-        print(x_mod, y_mod, canvas_ratio, x_dim_is_bigger)
-        print(dim_mod, center_mod_x, center_mod_y)
+        center_mod_y = int(self.winfo_height() / 2) - self.baby.dimension[1] * dim_mod
+        center_mod_x = int(self.winfo_width() / 2) - self.baby.dimension[0] * dim_mod
         for cell in self.baby.cells:
             cell.dimension = {'x_dim': dim_mod,
                               'y_dim': dim_mod}
