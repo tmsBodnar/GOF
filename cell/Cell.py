@@ -1,12 +1,4 @@
 class Cell(object):
-    x: int = 0
-    y: int = 0
-    x_dim = 0
-    y_dim = 0
-    position = (x, y)
-    dimension = {'x_dim': x_dim,
-                 'y_dim': y_dim}
-    neighbours: set()
 
     def __init__(self, x=None, y=None):
         if x is None or y is None:
@@ -18,6 +10,8 @@ class Cell(object):
             self.neighbours = set()
             self.set_neighbours()
             super(Cell, self).__init__()
+        self.x_dim = 0
+        self.y_dim = 0
 
     def __eq__(self, other):
         return self.position == other.position

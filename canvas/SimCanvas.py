@@ -1,4 +1,4 @@
-from pattern_canvas.GeneralCanvas import GeneralCanvas
+from canvas.GeneralCanvas import GeneralCanvas
 
 
 class SimCanvas(GeneralCanvas):

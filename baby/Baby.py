@@ -1,12 +1,12 @@
 class Baby(object):
-    dimension = tuple()
-    cells = set()
-    cells_positions = set()
-    neighbours = set()
-    name = ''
 
     def __init__(self):
         super(Baby, self).__init__()
+        self.dimension = tuple()
+        self.cells = set()
+        self.cells_positions = set()
+        self.neighbours = set()
+        self.name = ''
 
     def calculate_positions_and_neighbours_set(self):
         self.cells_positions.clear()

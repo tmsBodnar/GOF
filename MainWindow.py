@@ -7,39 +7,12 @@ from rleloader import RleLoader
 from pathlib import Path
 from baby import Baby
 import os
-from pattern_canvas.PatternCanvas import PatternCanvas
-from pattern_canvas.SimCanvas import SimCanvas
+from canvas.PatternCanvas import PatternCanvas
+from canvas.SimCanvas import SimCanvas
 from simulator import Simulator
 
 
 class MainWindow:
-
-    pattern_wrapper_options = {
-        'width': '220',
-        'height': '700',
-        'bg': 'White',
-        'bd': '5'
-    }
-    pattern_canvas_options = {
-        'width': '200',
-        'height': '200',
-        'bg': 'White',
-        'bd': '5'
-    }
-    sim_canvas_options = {
-        'width': '800',
-        'bg': 'White',
-        'height': '725',
-        'bd': '5'
-    }
-    patterns = []
-    is_simulated = False
-    is_play = False
-    timeout = 100
-    timer_id = 0
-    loaded_baby: Baby
-    size_mod = 1
-    root: tk
 
     # exit app
     @staticmethod
@@ -105,7 +78,7 @@ class MainWindow:
         self.next_button['state'] = tk.NORMAL
         self.delete_button['state'] = tk.NORMAL
 
-    # load patterns to pattern_canvas
+    # load patterns to canvas
     def load_pattern(self, file, row):
         extension = Path(file.name).suffix
         if extension.upper() != ".RLE":
@@ -191,8 +164,32 @@ class MainWindow:
         self.output.insert(Tk.END, self.variable.get())
 
     def __init__(self, master):
-        self.timer_id = 0
+        self.pattern_wrapper_options = {
+            'width': '220',
+            'height': '700',
+            'bg': 'White',
+            'bd': '5'
+        }
+        self.pattern_canvas_options = {
+            'width': '200',
+            'height': '200',
+            'bg': 'White',
+            'bd': '5'
+        }
+        self.sim_canvas_options = {
+            'width': '800',
+            'bg': 'White',
+            'height': '725',
+            'bd': '5'
+        }
+        self.patterns = []
+        self.is_simulated = False
+        self.is_play = False
+        self.timeout = 100
+        self.loaded_baby: Baby
+        self.size_mod = 1
 
+        self.timer_id = 0
         self.master = master
 
         self.pattern_wrapper = Canvas(master, self.pattern_wrapper_options, scrollregion=(0, 0, 1000, 1000))
