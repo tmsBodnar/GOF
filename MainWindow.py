@@ -1,13 +1,14 @@
 import tkinter as tk
+from copy import copy, deepcopy
 from tkinter import *
 import sys
 from tkinter import filedialog, messagebox
-from simulator import Simulator
 from rleloader import RleLoader
 from pathlib import Path
 from baby import Baby
 import os
 from pattern_canvas.PatternCanvas import PatternCanvas
+from pattern_canvas.SimCanvas import SimCanvas
 from simulator import Simulator
 
 
@@ -25,7 +26,7 @@ class MainWindow:
         'bg': 'White',
         'bd': '5'
     }
-    habitat_canvas_options = {
+    sim_canvas_options = {
         'width': '800',
         'bg': 'White',
         'height': '725',
@@ -54,7 +55,8 @@ class MainWindow:
                 widget.destroy()
             self.load_pattern(file, 0)
         self.sim_canvas.delete(ALL)
-        self.create_and_draw_sim_canvas(self.loaded_baby)
+
+        self.create_and_draw_sim_canvas()
 
     # open folder to load all files from
     def open_folder_dialog(self):
@@ -68,7 +70,8 @@ class MainWindow:
 
     def pattern_clicked(self, event):
         self.sim_canvas.delete(ALL)
-        self.create_and_draw_sim_canvas(event.widget.baby)
+        self.sim_canvas.set_baby(None)
+        self.create_and_draw_sim_canvas()
         self.is_simulated = False
 
     def simulation_start(self):
@@ -90,9 +93,10 @@ class MainWindow:
     def stop_simulation(self):
         self.master.after_cancel(self.timer_id)
 
-    def create_and_draw_sim_canvas(self, baby):
+    def create_and_draw_sim_canvas(self):
+        baby = deepcopy(self.loaded_baby)
         self.sim_canvas.set_baby(baby)
-        self.sim_canvas.fill_canvas_to_live(self.size_mod)
+        self.sim_canvas.fill_sim_canvas_to_live(self.size_mod)
         self.zoom_plus['state'] = tk.NORMAL
         self.zoom_minus['state'] = tk.NORMAL
         self.speed_plus['state'] = tk.NORMAL
@@ -109,34 +113,43 @@ class MainWindow:
         else:
             self.loaded_baby = RleLoader.load_pattern(file)
             self.loaded_baby.name = (file.name.split("/")[-1]).split('.')[0]
-            self.create_and_fill_pattern_canvas(self.loaded_baby, row)
+            self.create_and_fill_pattern_canvas(row)
 
     # create patterns canvas to show patterns visually
-    def create_and_fill_pattern_canvas(self, baby, row):
+    def create_and_fill_pattern_canvas(self, row):
         for widget in self.sim_canvas.winfo_children():
             widget.destroy()
         pattern_canvas = PatternCanvas(self.pattern_wrapper, self.pattern_canvas_options)
         pattern_canvas.grid(column=0, row=row, sticky=N + W)
-        pattern_canvas.set_baby(baby)
-        pattern_canvas.fill_canvas_with_baby_cells()
+        pattern_canvas.set_baby(self.loaded_baby)
+        pattern_canvas.fill_pattern_canvas_with_baby_cells()
         self.pattern_wrapper.create_window(100, 108 * (1 + row) + row * 108, window=pattern_canvas)
         pattern_canvas.bind("<Button-1>", self.pattern_clicked)
         self.pattern_wrapper.configure(scrollregion=self.pattern_wrapper.bbox(ALL))
 
-
     def callback_zoom_plus(self, event):
-        self.is_simulated = False
-        if self.size_mod < 1.4:
-            self.size_mod += 0.01
+        if self.is_simulated:
+            self.is_simulated = False
+            if self.size_mod < 1.07:
+                self.size_mod += 0.01
+            self.is_simulated = True
+        else:
+            if self.size_mod < 1.4:
+                self.size_mod += 0.01
+            self.sim_canvas.fill_sim_canvas_to_live(self.size_mod)
         print(self.size_mod)
-        self.is_simulated = True
 
     def callback_zoom_minus(self, event):
-        self.is_simulated = False
-        if self.size_mod > 0.93:
-            self.size_mod += -0.01
+        if self.is_simulated:
+            self.is_simulated = False
+            if self.size_mod > 0.93:
+                self.size_mod += -0.01
+            self.is_simulated = True
+        else:
+            if self.size_mod > 0.93:
+                self.size_mod += -0.01
+            self.sim_canvas.fill_sim_canvas_to_live(self.size_mod)
         print(self.size_mod)
-        self.is_simulated = True
 
     def callback_speed_plus(self, event):
         self.timeout = int(self.timeout * 0.8)
@@ -170,10 +183,9 @@ class MainWindow:
 
     def callback_delete(self, event):
         self.is_simulated = False
-        if self.timer_id :
+        if self.timer_id:
             self.master.after_cancel(self.timer_id)
-        self.sim_canvas.delete(ALL)
-
+        self.sim_canvas.clear_canvas()
 
     def action(self):
         self.output.insert(Tk.END, self.variable.get())
@@ -191,7 +203,7 @@ class MainWindow:
         self.pattern_wrapper.configure(yscrollcommand=self.vbar.set)
         self.pattern_wrapper.config(scrollregion=self.pattern_wrapper.bbox(ALL))
 
-        self.sim_canvas = PatternCanvas(master, self.habitat_canvas_options)
+        self.sim_canvas = SimCanvas(master, self.sim_canvas_options)
         self.sim_canvas.grid(column=2, row=0, sticky=E + N, columnspan=3, padx=2, pady=2)
 
         # menu

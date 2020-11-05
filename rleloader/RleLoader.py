@@ -79,7 +79,7 @@ def rle_decode(data, baby):
                 repeater_pos = 0
                 last_digit_value = ''
     baby.cells = cells
-    baby.calculate_positions_and_neighbours_set(cells)
+    baby.calculate_positions_and_neighbours_set()
     return baby
 
 
