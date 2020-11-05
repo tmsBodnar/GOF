@@ -15,8 +15,8 @@ from simulator import Simulator
 class MainWindow:
 
     # exit app
-    @staticmethod
-    def exit_callback():
+    def exit_callback(self):
+        self.stop_simulation()
         sys.exit()
 
     # opens file dialog, and starts simulation with chosen file
@@ -69,6 +69,8 @@ class MainWindow:
         baby = deepcopy(self.loaded_baby)
         self.sim_canvas.set_baby(baby)
         self.sim_canvas.fill_sim_canvas_to_live(self.size_mod)
+        self.play_button['image'] = self.play_icon
+        self.is_play = False
         self.set_buttons(tk.NORMAL)
 
     # load patterns to canvas
@@ -154,6 +156,7 @@ class MainWindow:
         self.play_button['image'] = self.play_icon
         self.set_buttons(tk.DISABLED)
         self.size_mod = 1
+        self.timeout = 100
 
     def set_buttons(self, arg):
         self.play_button['state'] = arg

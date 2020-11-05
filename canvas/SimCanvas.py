@@ -20,8 +20,6 @@ class SimCanvas(GeneralCanvas):
             y_mod / (self.baby.dimension[1] * canvas_ratio * self.modifier))
         center_mod_y = int(self.winfo_height() / 2) - self.baby.dimension[1] * dim_mod
         center_mod_x = int(self.winfo_width() / 2) - self.baby.dimension[0] * dim_mod
-        print(dim_mod, self.modifier, x_mod, canvas_ratio)
-        print(self.baby.dimension[0] * canvas_ratio + self.modifier)
         for cell in self.baby.cells:
             cell.dimension = {'x_dim': dim_mod,
                               'y_dim': dim_mod}
