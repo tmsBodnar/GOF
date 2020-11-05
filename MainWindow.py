@@ -58,10 +58,9 @@ class MainWindow:
             else:
                 self.stop_simulation()
         else:
-            messagebox.showinfo("Choose a pattern!", "Please, click on a pattern")
-
-    def run_simulation(self):
-        Simulator.start_simulation(self.sim_canvas)
+            self.play_button['image'] = self.play_icon
+            self.set_buttons(tk.DISABLED)
+            self.is_play = False
 
     def stop_simulation(self):
         self.master.after_cancel(self.timer_id)
@@ -70,13 +69,7 @@ class MainWindow:
         baby = deepcopy(self.loaded_baby)
         self.sim_canvas.set_baby(baby)
         self.sim_canvas.fill_sim_canvas_to_live(self.size_mod)
-        self.zoom_plus['state'] = tk.NORMAL
-        self.zoom_minus['state'] = tk.NORMAL
-        self.speed_plus['state'] = tk.NORMAL
-        self.speed_minus['state'] = tk.NORMAL
-        self.play_button['state'] = tk.NORMAL
-        self.next_button['state'] = tk.NORMAL
-        self.delete_button['state'] = tk.NORMAL
+        self.set_buttons(tk.NORMAL)
 
     # load patterns to canvas
     def load_pattern(self, file, row):
@@ -103,14 +96,13 @@ class MainWindow:
     def callback_zoom_plus(self):
         if self.is_simulated:
             self.is_simulated = False
-            if self.size_mod < 1.07:
+            if self.size_mod < 1.4:
                 self.size_mod += 0.01
             self.is_simulated = True
         else:
             if self.size_mod < 1.4:
                 self.size_mod += 0.01
             self.sim_canvas.fill_sim_canvas_to_live(self.size_mod)
-        print(self.size_mod)
 
     def callback_zoom_minus(self):
         if self.is_simulated:
@@ -122,7 +114,6 @@ class MainWindow:
             if self.size_mod > 0.93:
                 self.size_mod += -0.01
             self.sim_canvas.fill_sim_canvas_to_live(self.size_mod)
-        print(self.size_mod)
 
     def callback_speed_plus(self):
         self.timeout = int(self.timeout * 0.8)
@@ -136,20 +127,24 @@ class MainWindow:
         self.master.after_cancel(self.timer_id)
 
     def callback_play(self):
-        self.is_play = not self.is_play
-        if self.is_play:
-            self.play_button['image'] = self.pause_icon
-            self.is_simulated = True
-            self.simulation()
-            self.next_button['state'] = tk.DISABLED
-            self.delete_button['state'] = tk.DISABLED
+        print("play")
+        if len(self.sim_canvas.baby.cells) > 0:
+            self.is_play = not self.is_play
+            if self.is_play:
+                self.play_button['image'] = self.pause_icon
+                self.is_simulated = True
+                self.simulation()
+                self.next_button['state'] = tk.DISABLED
+                self.delete_button['state'] = tk.DISABLED
+            else:
+                self.next_button['state'] = tk.NORMAL
+                self.play_button['image'] = self.play_icon
+                self.delete_button['state'] = tk.NORMAL
+                self.is_simulated = False
+                self.master.after_cancel(self.timer_id)
+                self.simulation()
         else:
-            self.next_button['state'] = tk.NORMAL
-            self.play_button['image'] = self.play_icon
-            self.delete_button['state'] = tk.NORMAL
-            self.is_simulated = False
-            self.master.after_cancel(self.timer_id)
-            self.simulation()
+            messagebox.showinfo("Choose a pattern!", "Please, click on a pattern")
 
     def callback_delete(self):
         self.is_simulated = False
@@ -157,13 +152,17 @@ class MainWindow:
             self.master.after_cancel(self.timer_id)
         self.sim_canvas.clear_canvas()
         self.play_button['image'] = self.play_icon
-        self.play_button['state'] = tk.DISABLED
-        self.next_button['state'] = tk.DISABLED
-        self.delete_button['state'] = tk.DISABLED
-        self.speed_minus['state'] = tk.DISABLED
-        self.speed_plus['state'] = tk.DISABLED
-        self.zoom_minus['state'] = tk.DISABLED
-        self.zoom_plus['state'] = tk.DISABLED
+        self.set_buttons(tk.DISABLED)
+        self.size_mod = 1
+
+    def set_buttons(self, arg):
+        self.play_button['state'] = arg
+        self.next_button['state'] = arg
+        self.delete_button['state'] = arg
+        self.speed_minus['state'] = arg
+        self.speed_plus['state'] = arg
+        self.zoom_minus['state'] = arg
+        self.zoom_plus['state'] = arg
 
     def action(self):
         self.output.insert(Tk.END, self.variable.get())

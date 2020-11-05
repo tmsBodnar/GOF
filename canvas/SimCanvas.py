@@ -3,6 +3,10 @@ from canvas.GeneralCanvas import GeneralCanvas
 
 class SimCanvas(GeneralCanvas):
 
+    def __init__(self, root, *args):
+        super().__init__(root, *args)
+        self.modifier = 1
+
     def fill_sim_canvas_to_live(self, size_mod):
         self.update()
         if self.pre_size_mod != size_mod:
@@ -12,10 +16,12 @@ class SimCanvas(GeneralCanvas):
         y_mod = self.y_size
         x_dim_is_bigger = True if self.baby.dimension[0] >= self.baby.dimension[1] else False
         canvas_ratio = x_mod / self.baby.dimension[0] / 10 if x_dim_is_bigger else y_mod / self.baby.dimension[0] / 10
-        dim_mod = int(x_mod / (self.baby.dimension[0] * canvas_ratio + 20)) if x_dim_is_bigger else int(
-            y_mod / (self.baby.dimension[1] * canvas_ratio + 20))
+        dim_mod = int(x_mod / (self.baby.dimension[0] * canvas_ratio * self.modifier)) if x_dim_is_bigger else int(
+            y_mod / (self.baby.dimension[1] * canvas_ratio * self.modifier))
         center_mod_y = int(self.winfo_height() / 2) - self.baby.dimension[1] * dim_mod
         center_mod_x = int(self.winfo_width() / 2) - self.baby.dimension[0] * dim_mod
+        print(dim_mod, self.modifier, x_mod, canvas_ratio)
+        print(self.baby.dimension[0] * canvas_ratio + self.modifier)
         for cell in self.baby.cells:
             cell.dimension = {'x_dim': dim_mod,
                               'y_dim': dim_mod}
@@ -33,12 +39,13 @@ class SimCanvas(GeneralCanvas):
         self.update()
 
     def change_size(self, size_value):
-        if size_value > self.pre_size_mod:
-            size_value = 1.3
+        if size_value < self.pre_size_mod:
             self.x_size *= 1.3
             self.y_size *= 1.3
+            if self.modifier < 8:
+                self.modifier *= 1.3
         else:
-            size_value = 0.7
-            self.x_size *= 0.7
-            self.y_size *= 0.7
-        self.scale('all', 0, 0, size_value, size_value)
+            self.x_size /= 1.3
+            self.y_size /= 1.3
+            if self.modifier > 0.15:
+                self.modifier /= 1.3
