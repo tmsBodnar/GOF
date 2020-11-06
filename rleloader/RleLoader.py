@@ -3,8 +3,10 @@ from cell import Cell
 import re
 import sys
 
+# module manage the *.rle file reading
+# helps creating a Baby from a pattern file
+
 dim_regex = re.compile('(x *=)')
-y_regex = re.compile('(y *=)')
 
 
 def set_pattern_dimension(line, baby):
@@ -34,7 +36,7 @@ def find_and_set_row_multipliers(data):
         multiplier_count = re.search(r"\d+", match_row_multiplier_pattern)
         if multiplier_count:
             row_multiplier = int(multiplier_count.group())
-            for indx in range(row_multiplier):
+            for i in range(row_multiplier):
                 replaced += '$'
         temp_pattern = result[start + index_mod: stop + index_mod]
         result = result.replace(temp_pattern, replaced, 1 )
@@ -46,7 +48,6 @@ def rle_decode(data, baby):
     cells = set()
     data.lower()
     data_rows = find_and_set_row_multipliers(data)
-
     row_list = data_rows.rsplit('$')
     for row_index, row in enumerate(row_list, start=0):
         repeater_pos = 0

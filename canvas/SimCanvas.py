@@ -1,5 +1,9 @@
 from canvas.GeneralCanvas import GeneralCanvas
 
+# subclass of GeneralCanvas
+# displays a Baby in simulation canvas, in the Habitat
+# it can handle the zoom function with change_size method
+
 
 class SimCanvas(GeneralCanvas):
 
@@ -7,7 +11,7 @@ class SimCanvas(GeneralCanvas):
         super().__init__(root, *args)
         self.modifier = 1
 
-    def fill_sim_canvas_to_live(self, size_mod):
+    def fill_with_baby_cells(self, size_mod):
         self.update()
         if self.pre_size_mod != size_mod:
             self.change_size(size_mod)

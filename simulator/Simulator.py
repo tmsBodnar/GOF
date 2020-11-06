@@ -1,5 +1,8 @@
 from cell.Cell import Cell
 
+# module to handling simulation
+# contains the logic to calculate next gen live and dead cells of a Baby in canvas
+
 temp_cells = set()
 
 
@@ -8,7 +11,7 @@ def start_simulation(sim_canvas, size_mod):
     sim_canvas.baby.cells.clear()
     sim_canvas.baby.cells = temp_cells.copy()
     sim_canvas.baby.calculate_positions_and_neighbours_set()
-    sim_canvas.fill_sim_canvas_to_live(size_mod)
+    sim_canvas.fill_with_baby_cells(size_mod)
 
 
 def calculate_next_gen_cells(sim_canvas):

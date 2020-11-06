@@ -1,6 +1,11 @@
 from tkinter import Canvas
 from baby import Baby
 
+# super class of specific canvas types, the habitat of a Baby
+# has x - y size
+# has a Baby instance
+# has a pre_size_mod, to store the previous size modificator to implement zooming
+
 
 class GeneralCanvas(Canvas):
 

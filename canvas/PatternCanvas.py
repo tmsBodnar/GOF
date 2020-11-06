@@ -1,10 +1,13 @@
 
 from canvas.GeneralCanvas import GeneralCanvas
 
+# a subclass of GenerelCanvas
+# displays a Baby in pattern wrapper canvas(es)
+
 
 class PatternCanvas(GeneralCanvas):
 
-    def fill_pattern_canvas_with_baby_cells(self):
+    def fill_with_baby_cells(self):
         self.update()
         x_mod = self.x_size
         y_mod = self.y_size

@@ -1,7 +1,14 @@
-class Baby(object):
+# represent a 'Baby', a pattern, which is a creature to live
+# has a dimension, size in x - y aspect
+# has set of cells
+# has set of cell's positions
+# has set of cell's neighbours
+
+
+class Baby:
 
     def __init__(self):
-        super(Baby, self).__init__()
+        super().__init__()
         self.dimension = tuple()
         self.cells = set()
         self.cells_positions = set()

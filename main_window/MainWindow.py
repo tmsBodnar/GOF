@@ -1,5 +1,5 @@
 import tkinter as tk
-from copy import copy, deepcopy
+from copy import deepcopy
 from tkinter import *
 import sys
 from tkinter import filedialog, messagebox
@@ -11,15 +11,18 @@ from canvas.PatternCanvas import PatternCanvas
 from canvas.SimCanvas import SimCanvas
 from simulator import Simulator
 
+# main window, wraps all tkinter components
+# loads pattern(s) from file (folder)
+# handle click events
+# manage simulation speed
+
 
 class MainWindow:
 
-    # exit app
     def exit_callback(self):
         self.stop_simulation()
         sys.exit()
 
-    # opens file dialog, and starts simulation with chosen file
     def open_file_dialog(self):
         self.is_simulated = False
         file = filedialog.askopenfile(mode='r')
@@ -29,7 +32,6 @@ class MainWindow:
             self.load_pattern(file, 0)
         self.pattern_clicked(None)
 
-    # open folder to load all files from
     def open_folder_dialog(self):
         path = filedialog.askdirectory()
         self.is_simulated = False
@@ -49,30 +51,14 @@ class MainWindow:
         self.create_and_draw_sim_canvas()
         self.is_simulated = False
 
-    def simulation(self):
-        if len(self.sim_canvas.baby.cells) > 0:
-            if self.is_simulated:
-                Simulator.start_simulation(self.sim_canvas, self.size_mod)
-                self.timer_id = self.master.after(self.timeout, self.simulation)
-            else:
-                self.stop_simulation()
-        else:
-            self.play_button['image'] = self.play_icon
-            self.set_buttons(tk.DISABLED)
-            self.is_play = False
-
-    def stop_simulation(self):
-        self.master.after_cancel(self.timer_id)
-
     def create_and_draw_sim_canvas(self):
         baby = deepcopy(self.clicked_pattern)
         self.sim_canvas.set_baby(baby)
-        self.sim_canvas.fill_sim_canvas_to_live(self.size_mod)
+        self.sim_canvas.fill_with_baby_cells(self.size_mod)
         self.play_button['image'] = self.play_icon
         self.is_play = False
         self.set_buttons(tk.NORMAL)
 
-    # load patterns to canvas
     def load_pattern(self, file, row):
         extension = Path(file.name).suffix
         if extension.upper() != ".RLE":
@@ -82,45 +68,16 @@ class MainWindow:
             self.loaded_pattern.name = (file.name.split("/")[-1]).split('.')[0]
             self.create_and_fill_pattern_canvas(row)
 
-    # create patterns canvas to show patterns visually
     def create_and_fill_pattern_canvas(self, row):
         for widget in self.sim_canvas.winfo_children():
             widget.destroy()
         pattern_canvas = PatternCanvas(self.pattern_wrapper, self.pattern_canvas_options)
         pattern_canvas.grid(column=0, row=row, sticky=N + W)
         pattern_canvas.set_baby(self.loaded_pattern)
-        pattern_canvas.fill_pattern_canvas_with_baby_cells()
+        pattern_canvas.fill_with_baby_cells()
         self.pattern_wrapper.create_window(100, 108 * (1 + row) + row * 108, window=pattern_canvas)
         pattern_canvas.bind("<Button-1>", self.pattern_clicked)
         self.pattern_wrapper.configure(scrollregion=self.pattern_wrapper.bbox(ALL))
-
-    def callback_zoom_plus(self):
-        if self.is_simulated:
-            self.is_simulated = False
-            if self.size_mod < 1.4:
-                self.size_mod += 0.01
-            self.is_simulated = True
-        else:
-            if self.size_mod < 1.4:
-                self.size_mod += 0.01
-            self.sim_canvas.fill_sim_canvas_to_live(self.size_mod)
-
-    def callback_zoom_minus(self):
-        if self.is_simulated:
-            self.is_simulated = False
-            if self.size_mod > 0.93:
-                self.size_mod += -0.01
-            self.is_simulated = True
-        else:
-            if self.size_mod > 0.93:
-                self.size_mod += -0.01
-            self.sim_canvas.fill_sim_canvas_to_live(self.size_mod)
-
-    def callback_speed_plus(self):
-        self.timeout = int(self.timeout * 0.8)
-
-    def callback_speed_minus(self):
-        self.timeout = int(self.timeout * 1.2)
 
     def callback_step(self):
         self.is_simulated = True
@@ -156,6 +113,50 @@ class MainWindow:
         self.set_buttons(tk.DISABLED)
         self.size_mod = 1
         self.timeout = 100
+
+
+    def simulation(self):
+        if len(self.sim_canvas.baby.cells) > 0:
+            if self.is_simulated:
+                Simulator.start_simulation(self.sim_canvas, self.size_mod)
+                self.timer_id = self.master.after(self.timeout, self.simulation)
+            else:
+                self.stop_simulation()
+        else:
+            self.play_button['image'] = self.play_icon
+            self.set_buttons(tk.DISABLED)
+            self.is_play = False
+
+    def stop_simulation(self):
+        self.master.after_cancel(self.timer_id)
+
+    def callback_zoom_plus(self):
+        if self.is_simulated:
+            self.is_simulated = False
+            if self.size_mod < 1.4:
+                self.size_mod += 0.01
+            self.is_simulated = True
+        else:
+            if self.size_mod < 1.4:
+                self.size_mod += 0.01
+            self.sim_canvas.fill_with_baby_cells(self.size_mod)
+
+    def callback_zoom_minus(self):
+        if self.is_simulated:
+            self.is_simulated = False
+            if self.size_mod > 0.93:
+                self.size_mod += -0.01
+            self.is_simulated = True
+        else:
+            if self.size_mod > 0.93:
+                self.size_mod += -0.01
+            self.sim_canvas.fill_with_baby_cells(self.size_mod)
+
+    def callback_speed_plus(self):
+        self.timeout = int(self.timeout * 0.8)
+
+    def callback_speed_minus(self):
+        self.timeout = int(self.timeout * 1.2)
 
     def set_buttons(self, arg):
         self.play_button['state'] = arg
@@ -276,11 +277,3 @@ class MainWindow:
         self.delete_button = Button(self.button_wrapper, image=self.stop_icon,
                                     height=25, width=25, state=tk.DISABLED, command=self.callback_delete)
         self.delete_button.grid(column=2, row=0, sticky=E + N, padx=4, pady=4)
-
-
-root = Tk()
-root.geometry('1024x800')
-root.title('Game of life')
-root.resizable(0, 0)
-my_gui = MainWindow(root)
-root.mainloop()
