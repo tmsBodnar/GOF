@@ -27,9 +27,7 @@ class MainWindow:
             for widget in self.pattern_wrapper.winfo_children():
                 widget.destroy()
             self.load_pattern(file, 0)
-        self.sim_canvas.delete(ALL)
-
-        self.create_and_draw_sim_canvas()
+        self.pattern_clicked(None)
 
     # open folder to load all files from
     def open_folder_dialog(self):
@@ -42,13 +40,14 @@ class MainWindow:
                 pattern.close()
 
     def pattern_clicked(self, event):
+        if event is None:
+            self.clicked_pattern = deepcopy(self.loaded_pattern)
+        else:
+            self.clicked_pattern = deepcopy(event.widget.baby)
         self.sim_canvas.delete(ALL)
         self.sim_canvas.set_baby(None)
         self.create_and_draw_sim_canvas()
         self.is_simulated = False
-
-    def simulation_start(self):
-        Simulator.start_simulation(self.sim_canvas)
 
     def simulation(self):
         if len(self.sim_canvas.baby.cells) > 0:
@@ -66,7 +65,7 @@ class MainWindow:
         self.master.after_cancel(self.timer_id)
 
     def create_and_draw_sim_canvas(self):
-        baby = deepcopy(self.loaded_baby)
+        baby = deepcopy(self.clicked_pattern)
         self.sim_canvas.set_baby(baby)
         self.sim_canvas.fill_sim_canvas_to_live(self.size_mod)
         self.play_button['image'] = self.play_icon
@@ -79,8 +78,8 @@ class MainWindow:
         if extension.upper() != ".RLE":
             messagebox.showinfo("Wrong file type", "Please, load .rle files")
         else:
-            self.loaded_baby = RleLoader.load_pattern(file)
-            self.loaded_baby.name = (file.name.split("/")[-1]).split('.')[0]
+            self.loaded_pattern = RleLoader.load_pattern(file)
+            self.loaded_pattern.name = (file.name.split("/")[-1]).split('.')[0]
             self.create_and_fill_pattern_canvas(row)
 
     # create patterns canvas to show patterns visually
@@ -89,7 +88,7 @@ class MainWindow:
             widget.destroy()
         pattern_canvas = PatternCanvas(self.pattern_wrapper, self.pattern_canvas_options)
         pattern_canvas.grid(column=0, row=row, sticky=N + W)
-        pattern_canvas.set_baby(self.loaded_baby)
+        pattern_canvas.set_baby(self.loaded_pattern)
         pattern_canvas.fill_pattern_canvas_with_baby_cells()
         self.pattern_wrapper.create_window(100, 108 * (1 + row) + row * 108, window=pattern_canvas)
         pattern_canvas.bind("<Button-1>", self.pattern_clicked)
@@ -193,7 +192,8 @@ class MainWindow:
         self.is_simulated = False
         self.is_play = False
         self.timeout = 100
-        self.loaded_baby = Baby.Baby()
+        self.loaded_pattern = Baby.Baby()
+        self.clicked_pattern = Baby.Baby()
         self.size_mod = 1
 
         self.timer_id = 0
