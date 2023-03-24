@@ -19,7 +19,7 @@ This repo is the result of my Game of Life implementation with Python
 * Continous simulation with speed changing 
 * Simulate step by step
 
-![Game of Life Python](https://raw.githubusercontent.com/tmsBodnar/GOF/master/gof1.PNG) "Game of Life Python")
+![Game of Life Python](https://raw.githubusercontent.com/tmsBodnar/GOF/master/gof1.PNG)
 
 ## Contact me
 [Check out my other projects](http://www.kalandlabor.hu)
