@@ -15,7 +15,7 @@ zooming in / out the canvas
 continous simulation with speed changing 
 simulate step by step
 
-![Game of Life Python](https://github.com/tmsBodnar/GOF/blob/master/gof1.PNG "Game of Life Python")
+![Game of Life Python]([https://github.com/tmsBodnar/GOF/blob/master/gof1.PNG](https://raw.githubusercontent.com/tmsBodnar/GOF/master/gof1.PNG) "Game of Life Python")
 
 
 
