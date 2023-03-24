@@ -4,7 +4,7 @@ Game of life implemented in python
 ----
 
 ## The Intention
-I always would like to create my own implementation of Game Of Life vellural automaton.
+I always wanted to create my own implementation of Game Of Life cellural automaton.
 In the past i wrote one with java, for an interview task. You can check this out in my [other repo](https://github.com/tmsBodnar/GameOfLife)
 
 But i wanted to write it again, when i started to discover Python
