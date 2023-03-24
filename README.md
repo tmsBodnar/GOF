@@ -9,11 +9,11 @@ But i wanted to write it again, when i started to discover Python
 This repo is the result of my Game of Life implementation with Python
 
 ## Features
-I used Tkinter to GUI
-Load .lre patterns
-zooming in / out the canvas
-continous simulation with speed changing 
-simulate step by step
+* I used Tkinter to GUI
+* Load .lre patterns
+* Zooming in / out the canvas
+* Continous simulation with speed changing 
+* Simulate step by step
 
 ![Game of Life Python](https://raw.githubusercontent.com/tmsBodnar/GOF/master/gof1.PNG) "Game of Life Python")
 
